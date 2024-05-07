@@ -4,4 +4,6 @@ import ChatController from './controllers/ChatController';
 
 export const router = Router();
 
-router.get('/', ChatController.index);
+router.get('/chat', ChatController.index);
+
+router.post('/chat', ChatController.store);
