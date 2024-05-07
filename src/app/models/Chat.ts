@@ -1,16 +1,18 @@
 import {Schema, model} from 'mongoose';
 
-export const User = model('Chat', new Schema({
-  messages: [{
-    question: {
-      type: String,
-      require: true,
+export const Chat = model('Chat', new Schema({
+  messages: {
+    type: {
+      question: {
+        type: String,
+        require: true,
+      },
+      answer: {
+        type: String,
+      }
     },
-    answer: {
-      type: String,
-      require: true
-    }
-  }],
+    require: true
+  },
   createdAt: {
     type: Date,
     default: Date.now
