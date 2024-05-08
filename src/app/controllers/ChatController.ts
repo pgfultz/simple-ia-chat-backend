@@ -44,7 +44,7 @@ class ChatController{
   async update(req: Request, resp: Response){
     try{
       const _idChat = req.params.id;
-      console.log(req.body);
+      //console.log(req.body);
 
       let newMessages: any = [];
       newMessages.push(req.body[req.body.length - 1]);
