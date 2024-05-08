@@ -1,17 +1,25 @@
 import {Schema, model} from 'mongoose';
 
 export const Chat = model('Chat', new Schema({
+  name: {
+    type: String,
+    required: [true, 'The name field is required']
+  },
   messages: {
-    type: {
-      question: {
+    type: [{
+      role: {
         type: String,
-        require: true,
+        required: true,
       },
-      answer: {
+      content: {
         type: String,
+        required: true
+      },
+      sentAt: {
+        type: Date,
+        default: Date.now
       }
-    },
-    require: true
+    }],
   },
   createdAt: {
     type: Date,

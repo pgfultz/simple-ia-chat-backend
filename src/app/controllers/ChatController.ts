@@ -15,30 +15,21 @@ class ChatController{
   }
 
   async show(req: Request, resp: Response){
-    return resp.json({ok: true});
+    try{
+      const _id = req.params.id;
+      //console.log(_id);
+
+      const messages = await Chat.findById(_id);
+
+      return resp.json(messages);
+    }catch(err){
+      return resp.sendStatus(500);
+    }
   }
 
   async store(req: Request, resp: Response){
     try{
-      let msgFormat = {
-        question: req.body.question,
-        answer: ''
-      };
-
-      if(!req.body.question || req.body.question.length < 3){
-        return resp.status(400).json({error: 'Invalid question'});
-      }
-
-      const callGroq = await GroqChatCompletion(req.body.question);
-      //console.log(callGroq);
-
-      if(!callGroq){
-        return resp.status(400).json({error: 'An unexpected error occurred'});
-      }
-
-      msgFormat.answer = callGroq;
-
-      const addDb = await Chat.create({messages: msgFormat});
+      const addDb = await Chat.create(req.body);
 
       if(!addDb){
         return resp.status(400).json({error: 'An unexpected error occurred'});
@@ -51,7 +42,37 @@ class ChatController{
   }
 
   async update(req: Request, resp: Response){
-    return resp.json({ok: true});
+    try{
+      const _idChat = req.params.id;
+      console.log(req.body);
+
+      let newMessages: any = [];
+      newMessages.push(req.body[req.body.length - 1]);
+
+      const callGroq = await GroqChatCompletion(req.body);
+      //console.log(callGroq);
+
+      if(!callGroq){
+        return resp.status(400).json({error: 'An unexpected error occurred'});
+      }
+
+      newMessages.push({role: 'assistant', content: callGroq});
+      //console.log(newMessages);
+
+      const addDb = await Chat.findOneAndUpdate(
+        { _id: _idChat },
+        { $push: { messages: { $each: newMessages } } },
+        { new: true });
+
+      if(!addDb){
+        return resp.status(400).json({error: 'An unexpected error occurred'});
+      }
+
+      return resp.json(addDb);
+    } catch(err){
+      //console.log(err);
+      return resp.sendStatus(500);
+    }
   }
 
   async destroy(req: Request, resp: Response){
